@@ -1,5 +1,6 @@
 package com.cookieso.zeiger;
 
+import com.cookieso.zeiger.ui.NumberField;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -7,11 +8,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.scene.canvas.Canvas;
 
@@ -32,7 +33,7 @@ public class Main extends Application implements Runnable {
 
     private double time = 0;
     private boolean isTimeRunning = false;
-    private double frequency = 200;
+    private int frequency = 20;
     private SinePoint[] sineVoltage;
 
     public static void main(String[] args) {
@@ -64,8 +65,8 @@ public class Main extends Application implements Runnable {
 
         settings.setAlignment(Pos.TOP_LEFT);
         settings.setPadding(new Insets(10, 25, 10, 25));
-        settings.setHgap(5);
-        settings.setVgap(5);
+        settings.setHgap(10);
+        settings.setVgap(20);
         settings.setMinSize(width-(height*0.4), height*0.4);
 
         timeManager = new Button("Start");
@@ -81,7 +82,21 @@ public class Main extends Application implements Runnable {
             }
         });
 
+        Label frequencyLabel = new Label("Frequenz");
+
+        NumberField frequencyField = new NumberField(Integer.toString(frequency));
+        frequencyField.setPrefSize(60, 10);
+        frequencyField.setOnAction(event -> {
+            isTimeRunning = false;
+            timeManager.setText("Start");
+            time=0;
+            frequency = Integer.parseInt(frequencyField.getText());
+            sineVoltage = calcSine(100);
+        });
+
         settings.add(timeManager, 0, 0, 2, 1);
+        settings.add(frequencyLabel, 0, 1);
+        settings.add(frequencyField, 1, 1);
 
         top.getChildren().add(settings);
         canvasPointer = new Canvas(height*0.4, height*0.4);
@@ -166,7 +181,7 @@ public class Main extends Application implements Runnable {
         double canvasHeight = canvasPointer.getHeight();
         double canvasWidth = canvasPointer.getWidth();
 
-        g.setFill(Color.gray(0.8));
+        g.setFill(Color.gray(0.956));
         g.fillRect(0, 0, canvasWidth, canvasHeight);
         g.setStroke(Color.gray(0));
         g.setFill(Color.gray(0));
@@ -184,7 +199,7 @@ public class Main extends Application implements Runnable {
         double canvasHeight = canvasSine.getHeight();
         double canvasWidth = canvasSine.getWidth();
 
-        g.setFill(Color.gray(0.8));
+        g.setFill(Color.gray(0.956));
         g.fillRect(0, 0, canvasWidth, canvasHeight);
         g.setStroke(Color.gray(0));
         g.setFill(Color.gray(0));
@@ -229,11 +244,9 @@ public class Main extends Application implements Runnable {
 
     private SinePoint[] calcSine(double size) {
         ArrayList<SinePoint> points = new ArrayList<>();
-        double t = System.currentTimeMillis();
         for (double i = 0; i < 360; i+=0.1) {
             points.add(new SinePoint(i, Math.sin(i/360.0*frequency)*size*(-1)));
         }
-        System.out.println(System.currentTimeMillis()-t);
         return points.toArray(new SinePoint[0]);
     }
 }
