@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -28,6 +29,7 @@ public class Main extends Application implements Runnable {
     private double width = 800;
 
     private Button timeManager;
+    Slider timeSlider;
 
     private boolean running = false;
 
@@ -63,11 +65,13 @@ public class Main extends Application implements Runnable {
         HBox top = new HBox();
         settings = new GridPane();
 
+        timeSlider = new Slider();
+
         settings.setAlignment(Pos.TOP_LEFT);
         settings.setPadding(new Insets(10, 25, 10, 25));
         settings.setHgap(10);
         settings.setVgap(20);
-        settings.setMinSize(width-(height*0.4), height*0.4);
+        settings.setMinSize(width-(height*0.4)-50, height*0.4);
 
         timeManager = new Button("Start");
         timeManager.setPrefSize(60, 10);
@@ -89,14 +93,27 @@ public class Main extends Application implements Runnable {
         frequencyField.setOnAction(event -> {
             isTimeRunning = false;
             timeManager.setText("Start");
+            timeSlider.setValue(0);
             time=0;
             frequency = Integer.parseInt(frequencyField.getText());
             sineVoltage = calcSine(100);
         });
 
+        timeSlider.setMin(0);
+        timeSlider.setBlockIncrement(10);
+        timeSlider.setMax(360);
+        timeSlider.setValue(0);
+        timeSlider.setShowTickLabels(true);
+        timeSlider.setShowTickMarks(true);
+        timeSlider.setPrefSize(300, 20);
+        timeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            time = (double) newValue;
+        });
+
         settings.add(timeManager, 0, 0, 2, 1);
-        settings.add(frequencyLabel, 0, 1);
-        settings.add(frequencyField, 1, 1);
+        settings.add(timeSlider, 0, 1);
+        settings.add(frequencyLabel, 0, 2);
+        settings.add(frequencyField, 1, 2);
 
         top.getChildren().add(settings);
         canvasPointer = new Canvas(height*0.4, height*0.4);
@@ -139,6 +156,7 @@ public class Main extends Application implements Runnable {
                 if (isTimeRunning) {
                     if (time<361) {
                         time++;
+                        timeSlider.setValue(time);
                     } else {
                         Platform.runLater(() -> timeManager.setText("Start"));
                         isTimeRunning = false;
@@ -161,7 +179,7 @@ public class Main extends Application implements Runnable {
 
         double cPD = height*0.4;
 
-        settings.setMinSize(width-(cPD), cPD);
+        settings.setMinSize(width-(cPD)-50, cPD);
 
         canvasPointer.setHeight(cPD);
         canvasPointer.setWidth(cPD);
@@ -209,22 +227,30 @@ public class Main extends Application implements Runnable {
         // y-Axis
         g.strokeLine(20, canvasHeight/80, 20, canvasHeight-(canvasHeight/80));
 
+        renderMarkers(g);
         renderSineVoltage(g, canvasHeight, canvasWidth);
+    }
+
+    private void renderMarkers(GraphicsContext g) {
+
     }
 
     private void renderPointer(GraphicsContext g, double height) {
         double mid = height/2;
+        g.setStroke(Color.rgb(0, 123, 255));
         g.strokeLine(mid, mid, Math.cos(time/360.0*frequency)*102+mid, -Math.sin(time/360.0*frequency)*102+mid);
+        g.setStroke(Color.gray(0));
     }
 
     private void renderSineVoltage(GraphicsContext g, double height, double width) {
-        double periodTime = 70;
+        double periodTime = 70.5;
         double half = height/2;
         SinePoint pBefore = null;
         if (sineVoltage != null) {
             g.setStroke(Color.rgb(0, 123, 255));
             for (SinePoint p : sineVoltage) {
                 if (p.getX() == periodTime) {
+                    System.out.println("Draw");
                     double x = p.getX()/(360/width)+20;
                     g.setStroke(Color.rgb(0, 150, 110));
 
