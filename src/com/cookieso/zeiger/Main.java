@@ -3,19 +3,21 @@ package com.cookieso.zeiger;
 import com.cookieso.zeiger.ui.NumberField;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.scene.canvas.Canvas;
 
 import java.util.ArrayList;
 
@@ -37,6 +39,9 @@ public class Main extends Application implements Runnable {
     private boolean isTimeRunning = false;
     private int frequency = 20;
     private SinePoint[] sineVoltage;
+    private double coordinateOffset = 0;
+    private int sineStartOffset = 0;
+    private int sineHeight = 100;
 
     public static void main(String[] args) {
         launch(args);
@@ -53,7 +58,7 @@ public class Main extends Application implements Runnable {
             System.exit(0);
         });
         stage.show();
-        sineVoltage = calcSine(100);
+        sineVoltage = calcSine(sineHeight);
         this.start();
     }
 
@@ -70,7 +75,7 @@ public class Main extends Application implements Runnable {
         settings.setAlignment(Pos.TOP_LEFT);
         settings.setPadding(new Insets(10, 25, 10, 25));
         settings.setHgap(10);
-        settings.setVgap(20);
+        settings.setVgap(10);
         settings.setMinSize(width-(height*0.4)-50, height*0.4);
 
         timeManager = new Button("Start");
@@ -91,12 +96,30 @@ public class Main extends Application implements Runnable {
         NumberField frequencyField = new NumberField(Integer.toString(frequency));
         frequencyField.setPrefSize(60, 10);
         frequencyField.setOnAction(event -> {
-            isTimeRunning = false;
-            timeManager.setText("Start");
-            timeSlider.setValue(0);
-            time=0;
+            resetSine();
             frequency = Integer.parseInt(frequencyField.getText());
-            sineVoltage = calcSine(100);
+            sineVoltage = calcSine(sineHeight);
+        });
+
+        Label phaseOffsetLabel = new Label("Phasenverschiebung");
+
+        NumberField phaseOffsetField = new NumberField(Integer.toString(sineStartOffset));
+        phaseOffsetField.setOnAction(event -> {
+            resetSine();
+            sineStartOffset = Integer.parseInt(phaseOffsetField.getText());
+            sineVoltage = calcSine(sineHeight);
+        });
+
+        Label maxVoltageLabel = new Label("û");
+
+        NumberField maxVoltageText = new NumberField(Integer.toString(sineHeight));
+        maxVoltageText.setOnAction(event -> {
+            resetSine();
+            int maxSine = Integer.parseInt(maxVoltageText.getText());
+            sineHeight = Math.min(maxSine, 190);
+            sineHeight = maxSine > 0 ? sineHeight : 1;
+            maxVoltageText.setText(Integer.toString(sineHeight));
+            sineVoltage = calcSine(sineHeight);
         });
 
         timeSlider.setMin(0);
@@ -106,14 +129,16 @@ public class Main extends Application implements Runnable {
         timeSlider.setShowTickLabels(true);
         timeSlider.setShowTickMarks(true);
         timeSlider.setPrefSize(300, 20);
-        timeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            time = (double) newValue;
-        });
+        timeSlider.valueProperty().addListener((observable, oldValue, newValue) -> time = (double) newValue);
 
         settings.add(timeManager, 0, 0, 2, 1);
         settings.add(timeSlider, 0, 1);
         settings.add(frequencyLabel, 0, 2);
         settings.add(frequencyField, 1, 2);
+        settings.add(phaseOffsetLabel, 0, 3);
+        settings.add(phaseOffsetField, 1, 3);
+        settings.add(maxVoltageLabel, 0, 4);
+        settings.add(maxVoltageText, 1, 4);
 
         top.getChildren().add(settings);
         canvasPointer = new Canvas(height*0.4, height*0.4);
@@ -124,6 +149,13 @@ public class Main extends Application implements Runnable {
         layout.getChildren().add(top);
         layout.getChildren().add(canvasSine);
         stage.setScene(scene);
+    }
+
+    private void resetSine() {
+        isTimeRunning = false;
+        timeManager.setText("Start");
+        timeSlider.setValue(0);
+        time=0;
     }
 
     private void start() {
@@ -223,16 +255,19 @@ public class Main extends Application implements Runnable {
         g.setFill(Color.gray(0));
 
         // x-Axis
-        g.strokeLine(10, canvasHeight/2, canvasWidth, canvasHeight/2);
+        double heightByTwo = canvasHeight/2;
+        g.strokeLine(10, heightByTwo, canvasWidth, heightByTwo);
         // y-Axis
         g.strokeLine(20, canvasHeight/80, 20, canvasHeight-(canvasHeight/80));
 
-        renderMarkers(g);
+        renderMarkers(g, heightByTwo);
         renderSineVoltage(g, canvasHeight, canvasWidth);
     }
 
-    private void renderMarkers(GraphicsContext g) {
-
+    private void renderMarkers(GraphicsContext g, double height) {
+        for (double i = 20; i<361; i+=20) {
+            g.strokeLine(i*5, height+2, i*5, height-2);
+        }
     }
 
     private void renderPointer(GraphicsContext g, double height) {
@@ -261,7 +296,7 @@ public class Main extends Application implements Runnable {
                 }
 
                 if (pBefore != null && p.getX() <= time) {
-                    g.strokeLine(pBefore.getX()/(360/width)+20, pBefore.getY()*(height/400)+half, p.getX()/(360/width)+20, p.getY()*(height/400)+half);
+                    g.strokeLine(pBefore.getX()*5+20+coordinateOffset, pBefore.getY()*(height/400)+half, p.getX()*5+20+coordinateOffset, p.getY()*(height/400)+half);
                 }
                 pBefore = p;
             }
@@ -271,7 +306,7 @@ public class Main extends Application implements Runnable {
     private SinePoint[] calcSine(double size) {
         ArrayList<SinePoint> points = new ArrayList<>();
         for (double i = 0; i < 360; i+=0.1) {
-            points.add(new SinePoint(i, Math.sin(i/360.0*frequency)*size*(-1)));
+            points.add(new SinePoint(i, Math.sin(i/360.0*frequency + (sineStartOffset/10.0))*size*(-1)));
         }
         return points.toArray(new SinePoint[0]);
     }
