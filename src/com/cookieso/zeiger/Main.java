@@ -101,6 +101,7 @@ public class Main extends Application implements Runnable {
         if (running) return;
         running = true;
         sineVoltage = calcSine(100);
+        pointer = calcPointer(100);
         new Thread(this).start();
         System.out.println("Starting...");
     }
@@ -180,7 +181,7 @@ public class Main extends Application implements Runnable {
             g.strokeOval(5, 5, canvasWidth-10, canvasWidth-10);
         }
 
-        renderPointer(g, canvasHeight, canvasWidth);
+        renderPointer(g, canvasHeight);
     }
 
     private void renderSineGrid(GraphicsContext g) {
@@ -200,8 +201,12 @@ public class Main extends Application implements Runnable {
         renderSineVoltage(g, canvasHeight, canvasWidth);
     }
 
-    private void renderPointer(GraphicsContext g, double height, double width) {
-
+    private void renderPointer(GraphicsContext g, double height) {
+        double mid = height/2;
+        for (Point2D p : pointer) {
+            g.strokeLine(mid, mid, p.getX()+mid, p.getY()+mid);
+            System.out.println();
+        }
     }
 
     private void renderSineVoltage(GraphicsContext g, double height, double width) {
@@ -237,10 +242,10 @@ public class Main extends Application implements Runnable {
         return points.toArray(new Point2D[0]);
     }
 
-    private Point2D[] calcPointer() {
+    private Point2D[] calcPointer(double size) {
         ArrayList<Point2D> points = new ArrayList<>();
-        for (int i = 0; i < 3600; i++) {
-            points.add(new Point2D(0, 0));
+        for (int i = 0; i < 360; i++) {
+            points.add(new Point2D(-Math.cos(i/360.0*frequency)*size, -Math.sin(i/360.0*frequency)*size));
         }
         return points.toArray(new Point2D[0]);
     }
