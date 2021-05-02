@@ -34,14 +34,13 @@ public class Main extends Application implements Runnable {
     private boolean isTimeRunning = false;
     private double frequency = 50;
     private Point2D[] sineVoltage;
-    private Point2D[] pointer;
 
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         this.stage = stage;
         stage.setTitle("Wechselstrom Simulation");
         setupScene(stage);
@@ -98,7 +97,6 @@ public class Main extends Application implements Runnable {
         if (running) return;
         running = true;
         sineVoltage = calcSine(100);
-        pointer = calcPointer();
         new Thread(this).start();
         System.out.println("Starting...");
     }
@@ -232,14 +230,6 @@ public class Main extends Application implements Runnable {
         ArrayList<Point2D> points = new ArrayList<>();
         for (int i = 0; i < 360; i++) {
             points.add(new Point2D(i, Math.sin(i/360.0*frequency)*size*(-1)));
-        }
-        return points.toArray(new Point2D[0]);
-    }
-
-    private Point2D[] calcPointer() {
-        ArrayList<Point2D> points = new ArrayList<>();
-        for (int i = 0; i < 360; i++) {
-            points.add(new Point2D(-Math.cos(i/360.0*frequency)* (double) 100, -Math.sin(i/360.0*frequency)* (double) 100));
         }
         return points.toArray(new Point2D[0]);
     }
