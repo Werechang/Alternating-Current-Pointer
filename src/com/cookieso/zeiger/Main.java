@@ -3,7 +3,6 @@ package com.cookieso.zeiger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
@@ -12,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.scene.canvas.Canvas;
 
@@ -32,8 +32,8 @@ public class Main extends Application implements Runnable {
 
     private double time = 0;
     private boolean isTimeRunning = false;
-    private double frequency = 50;
-    private Point2D[] sineVoltage;
+    private double frequency = 200;
+    private SinePoint[] sineVoltage;
 
     public static void main(String[] args) {
         launch(args);
@@ -50,6 +50,7 @@ public class Main extends Application implements Runnable {
             System.exit(0);
         });
         stage.show();
+        sineVoltage = calcSine(100);
         this.start();
     }
 
@@ -96,7 +97,6 @@ public class Main extends Application implements Runnable {
     private void start() {
         if (running) return;
         running = true;
-        sineVoltage = calcSine(100);
         new Thread(this).start();
         System.out.println("Starting...");
     }
@@ -144,9 +144,10 @@ public class Main extends Application implements Runnable {
         width = stage.getWidth();
         height = stage.getHeight();
 
-        settings.setMinSize(width-(height*0.4), height*0.4);
-
         double cPD = height*0.4;
+
+        settings.setMinSize(width-(cPD), cPD);
+
         canvasPointer.setHeight(cPD);
         canvasPointer.setWidth(cPD);
 
@@ -204,10 +205,10 @@ public class Main extends Application implements Runnable {
     private void renderSineVoltage(GraphicsContext g, double height, double width) {
         double periodTime = 70;
         double half = height/2;
-        Point2D pBefore = null;
+        SinePoint pBefore = null;
         if (sineVoltage != null) {
             g.setStroke(Color.rgb(0, 123, 255));
-            for (Point2D p : sineVoltage) {
+            for (SinePoint p : sineVoltage) {
                 if (p.getX() == periodTime) {
                     double x = p.getX()/(360/width)+20;
                     g.setStroke(Color.rgb(0, 150, 110));
@@ -226,11 +227,13 @@ public class Main extends Application implements Runnable {
         }
     }
 
-    private Point2D[] calcSine(double size) {
-        ArrayList<Point2D> points = new ArrayList<>();
-        for (int i = 0; i < 360; i++) {
-            points.add(new Point2D(i, Math.sin(i/360.0*frequency)*size*(-1)));
+    private SinePoint[] calcSine(double size) {
+        ArrayList<SinePoint> points = new ArrayList<>();
+        double t = System.currentTimeMillis();
+        for (double i = 0; i < 360; i+=0.1) {
+            points.add(new SinePoint(i, Math.sin(i/360.0*frequency)*size*(-1)));
         }
-        return points.toArray(new Point2D[0]);
+        System.out.println(System.currentTimeMillis()-t);
+        return points.toArray(new SinePoint[0]);
     }
 }
