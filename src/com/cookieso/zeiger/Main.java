@@ -20,9 +20,6 @@ import java.util.ArrayList;
 public class Main extends Application implements Runnable {
 
     private Stage stage;
-    private Scene scene;
-    private VBox layout;
-    private HBox top;
     private GridPane settings;
     private Canvas canvasPointer;
     private Canvas canvasSine;
@@ -58,11 +55,11 @@ public class Main extends Application implements Runnable {
     }
 
     private void setupScene(Stage stage) {
-        layout = new VBox();
-        scene = new Scene(layout, width, height);
+        VBox layout = new VBox();
+        Scene scene = new Scene(layout, width, height);
         layout.setPadding(new Insets(10));
 
-        top = new HBox();
+        HBox top = new HBox();
         settings = new GridPane();
 
         settings.setAlignment(Pos.TOP_LEFT);
@@ -101,7 +98,7 @@ public class Main extends Application implements Runnable {
         if (running) return;
         running = true;
         sineVoltage = calcSine(100);
-        pointer = calcPointer(100);
+        pointer = calcPointer();
         new Thread(this).start();
         System.out.println("Starting...");
     }
@@ -203,10 +200,7 @@ public class Main extends Application implements Runnable {
 
     private void renderPointer(GraphicsContext g, double height) {
         double mid = height/2;
-        for (Point2D p : pointer) {
-            g.strokeLine(mid, mid, p.getX()+mid, p.getY()+mid);
-            System.out.println();
-        }
+        g.strokeLine(mid, mid, Math.cos(time/360.0*frequency)*102+mid, -Math.sin(time/360.0*frequency)*102+mid);
     }
 
     private void renderSineVoltage(GraphicsContext g, double height, double width) {
@@ -242,10 +236,10 @@ public class Main extends Application implements Runnable {
         return points.toArray(new Point2D[0]);
     }
 
-    private Point2D[] calcPointer(double size) {
+    private Point2D[] calcPointer() {
         ArrayList<Point2D> points = new ArrayList<>();
         for (int i = 0; i < 360; i++) {
-            points.add(new Point2D(-Math.cos(i/360.0*frequency)*size, -Math.sin(i/360.0*frequency)*size));
+            points.add(new Point2D(-Math.cos(i/360.0*frequency)* (double) 100, -Math.sin(i/360.0*frequency)* (double) 100));
         }
         return points.toArray(new Point2D[0]);
     }
