@@ -3,7 +3,6 @@ package com.cookieso.zeiger;
 import com.cookieso.zeiger.ui.NumberField;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,7 +11,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -37,11 +35,11 @@ public class Main extends Application implements Runnable {
 
     private double time = 0;
     private boolean isTimeRunning = false;
-    private int frequency = 20;
+    private int frequency = 40;
     private SinePoint[] sineVoltage;
     private double coordinateOffset = 0;
     private int sineStartOffset = 0;
-    private int sineHeight = 100;
+    private int sineHeight = 1;
 
     public static void main(String[] args) {
         launch(args);
@@ -96,30 +94,36 @@ public class Main extends Application implements Runnable {
         NumberField frequencyField = new NumberField(Integer.toString(frequency));
         frequencyField.setPrefSize(60, 10);
         frequencyField.setOnAction(event -> {
-            resetSine();
-            frequency = Integer.parseInt(frequencyField.getText());
-            sineVoltage = calcSine(sineHeight);
+            if (Integer.parseInt(frequencyField.getText()) != frequency) {
+                resetSine();
+                frequency = Integer.parseInt(frequencyField.getText());
+                sineVoltage = calcSine(sineHeight);
+            }
         });
 
         Label phaseOffsetLabel = new Label("Phasenverschiebung");
 
         NumberField phaseOffsetField = new NumberField(Integer.toString(sineStartOffset));
         phaseOffsetField.setOnAction(event -> {
-            resetSine();
-            sineStartOffset = Integer.parseInt(phaseOffsetField.getText());
-            sineVoltage = calcSine(sineHeight);
+            if (Integer.parseInt(phaseOffsetField.getText()) != sineStartOffset) {
+                resetSine();
+                sineStartOffset = Integer.parseInt(phaseOffsetField.getText());
+                sineVoltage = calcSine(sineHeight);
+            }
         });
 
         Label maxVoltageLabel = new Label("û");
 
         NumberField maxVoltageText = new NumberField(Integer.toString(sineHeight));
         maxVoltageText.setOnAction(event -> {
-            resetSine();
-            int maxSine = Integer.parseInt(maxVoltageText.getText());
-            sineHeight = Math.min(maxSine, 190);
-            sineHeight = maxSine > 0 ? sineHeight : 1;
-            maxVoltageText.setText(Integer.toString(sineHeight));
-            sineVoltage = calcSine(sineHeight);
+            if (Integer.parseInt(maxVoltageText.getText()) != sineHeight) {
+                resetSine();
+                int maxSine = Integer.parseInt(maxVoltageText.getText());
+                sineHeight = Math.min(maxSine, 190);
+                sineHeight = maxSine > 0 ? sineHeight : 1;
+                maxVoltageText.setText(Integer.toString(sineHeight));
+                sineVoltage = calcSine(sineHeight);
+            }
         });
 
         timeSlider.setMin(0);
@@ -265,15 +269,24 @@ public class Main extends Application implements Runnable {
     }
 
     private void renderMarkers(GraphicsContext g, double height) {
-        for (double i = 20; i<361; i+=20) {
-            g.strokeLine(i*5, height+2, i*5, height-2);
+        for (double i = 20; i<width; i+=90) {
+            g.strokeLine(i, height+2, i, height-2);
         }
     }
 
     private void renderPointer(GraphicsContext g, double height) {
         double mid = height/2;
         g.setStroke(Color.rgb(0, 123, 255));
-        g.strokeLine(mid, mid, Math.cos(time/360.0*frequency)*102+mid, -Math.sin(time/360.0*frequency)*102+mid);
+        double px = Math.cos(time/360.0*frequency*2*Math.PI)*102+mid;
+        double py = -Math.sin(time/360.0*frequency*2*Math.PI)*102+mid;
+        g.strokeLine(mid, mid, px, py);
+
+
+        g.setFill(Color.rgb(0, 123, 255));
+
+
+
+        g.setFill(Color.gray(0));
         g.setStroke(Color.gray(0));
     }
 
@@ -305,8 +318,9 @@ public class Main extends Application implements Runnable {
 
     private SinePoint[] calcSine(double size) {
         ArrayList<SinePoint> points = new ArrayList<>();
-        for (double i = 0; i < 360; i+=0.1) {
-            points.add(new SinePoint(i, Math.sin(i/360.0*frequency + (sineStartOffset/10.0))*size*(-1)));
+        for (double i = 0; i < 360; i+=0.01) {
+            double y = Math.sin(i/360*frequency*2*Math.PI + (sineStartOffset/10.0))*size*100*(-1);
+            points.add(new SinePoint(i, y));
         }
         return points.toArray(new SinePoint[0]);
     }
