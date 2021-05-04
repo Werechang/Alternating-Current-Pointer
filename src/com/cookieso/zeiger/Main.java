@@ -273,7 +273,7 @@ public class Main extends Application implements Runnable {
     private void renderMarkers(GraphicsContext g, double height) {
         for (double i = 20; i<width && i<=1820; i+=90) {
             g.strokeLine(i, height+2, i, height-2);
-            g.strokeText(Integer.toString((int) ((i-20)/1.8)) + " ms", i, height-4);
+            g.strokeText((int) ((i - 20) / 1.8) + " ms", i, height-4);
         }
     }
 
@@ -284,10 +284,20 @@ public class Main extends Application implements Runnable {
         double py = -Math.sin(time/360.0*frequency*2*Math.PI)*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
+        double arrowWidth = 3;
+
+        double pTriangle1x = Math.cos((time+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle1y = -Math.sin((time+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+
+        double pTriangle2x = Math.cos((time-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle2y = -Math.sin((time-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
 
         g.setFill(Color.rgb(0, 123, 255));
 
+        double[] arrowX = {pTriangle1x, px, pTriangle2x};
+        double[] arrowY = {pTriangle1y, py, pTriangle2y};
 
+        g.fillPolygon(arrowX, arrowY, 3);
 
         g.setFill(Color.gray(0));
         g.setStroke(Color.gray(0));
