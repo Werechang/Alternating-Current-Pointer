@@ -15,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -135,7 +136,7 @@ public class Main extends Application implements Runnable {
         timeSlider.setShowTickLabels(true);
         timeSlider.setShowTickMarks(true);
         timeSlider.setPrefSize(300, 20);
-        timeSlider.valueProperty().addListener((observable, oldValue, newValue) -> time = (double) newValue);
+        timeSlider.valueProperty().addListener((observable, oldValue, newValue) -> time = (double) Math.round((Double) newValue));
 
         settings.add(timeManager, 0, 0, 2, 1);
         settings.add(timeSlider, 0, 1);
@@ -192,7 +193,7 @@ public class Main extends Application implements Runnable {
                 });
                 frames++;
                 if (isTimeRunning) {
-                    if (time<361) {
+                    if (time<360) {
                         time++;
                         timeSlider.setValue(time);
                     } else {
@@ -227,16 +228,23 @@ public class Main extends Application implements Runnable {
     }
 
     private void render() {
+        double canvasHeightP = canvasPointer.getHeight();
+        double canvasWidthP = canvasPointer.getWidth();
+
+        double canvasHeightS = canvasSine.getHeight();
+        double canvasWidthS = canvasSine.getWidth();
+
         GraphicsContext gP = canvasPointer.getGraphicsContext2D();
         GraphicsContext gS = canvasSine.getGraphicsContext2D();
-        renderPointerGrid(gP);
-        renderSineGrid(gS);
+        renderPointerGrid(gP, canvasWidthP, canvasHeightP);
+        renderPointer(gP, canvasHeightP);
+
+        renderSineGrid(gS, canvasWidthS, canvasHeightS);
+        renderSineVoltage(gS, canvasHeightS, canvasWidthS);
+        renderMarkers(gS, canvasHeightS/2);
     }
 
-    private void renderPointerGrid(GraphicsContext g) {
-        double canvasHeight = canvasPointer.getHeight();
-        double canvasWidth = canvasPointer.getWidth();
-
+    private void renderPointerGrid(GraphicsContext g, double canvasWidth, double canvasHeight) {
         g.setFill(Color.gray(0.956));
         g.fillRect(0, 0, canvasWidth, canvasHeight);
         g.setStroke(Color.gray(0));
@@ -248,14 +256,9 @@ public class Main extends Application implements Runnable {
             g.strokeOval(5, 5, canvasWidth-10, canvasWidth-10);
         }
         g.strokeLine(canvasHeight/2, canvasHeight/2, canvasHeight-5, canvasHeight/2);
-
-        renderPointer(g, canvasHeight);
     }
 
-    private void renderSineGrid(GraphicsContext g) {
-        double canvasHeight = canvasSine.getHeight();
-        double canvasWidth = canvasSine.getWidth();
-
+    private void renderSineGrid(GraphicsContext g, double canvasWidth, double canvasHeight) {
         g.setFill(Color.gray(0.956));
         g.fillRect(0, 0, canvasWidth, canvasHeight);
         g.setStroke(Color.gray(0));
@@ -266,9 +269,6 @@ public class Main extends Application implements Runnable {
         g.strokeLine(10, heightByTwo, canvasWidth, heightByTwo);
         // y-Axis
         g.strokeLine(20, canvasHeight/80, 20, canvasHeight-(canvasHeight/80));
-
-        renderMarkers(g, heightByTwo);
-        renderSineVoltage(g, canvasHeight, canvasWidth);
     }
 
     private void renderMarkers(GraphicsContext g, double height) {
@@ -285,7 +285,7 @@ public class Main extends Application implements Runnable {
         double py = -Math.sin(time/360.0*frequency*2*Math.PI)*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
-        double arrowWidth = 3;
+        double arrowWidth = 2;
 
         double pTriangle1x = Math.cos((time+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
         double pTriangle1y = -Math.sin((time+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
@@ -328,6 +328,8 @@ public class Main extends Application implements Runnable {
                 pBefore = p;
             }
         }
+        g.setFill(Color.gray(0));
+        g.setStroke(Color.gray(0));
     }
 
     private SinePoint[] calcSine(double size) {
