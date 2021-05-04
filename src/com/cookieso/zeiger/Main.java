@@ -247,6 +247,7 @@ public class Main extends Application implements Runnable {
         } else {
             g.strokeOval(5, 5, canvasWidth-10, canvasWidth-10);
         }
+        g.strokeLine(canvasHeight/2, canvasHeight/2, canvasHeight-5, canvasHeight/2);
 
         renderPointer(g, canvasHeight);
     }
