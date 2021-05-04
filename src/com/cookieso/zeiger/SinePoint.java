@@ -2,7 +2,8 @@ package com.cookieso.zeiger;
 
 public class SinePoint {
 
-    private double x, y;
+    private final double x;
+    private final double y;
 
     public SinePoint(double x, double y) {
         this.x = x;
