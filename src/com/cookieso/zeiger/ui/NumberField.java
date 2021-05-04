@@ -10,7 +10,7 @@ public class NumberField extends TextField {
         this.addEventFilter(KeyEvent.KEY_TYPED, t -> {
             char[] ar = t.getCharacter().toCharArray();
             char ch = ar[t.getCharacter().toCharArray().length - 1];
-            if (!(ch >= '0' && ch <= '9')) {
+            if (!(ch >= '0' && ch <= '9' || ch == '-')) {
                 t.consume();
             }
         });

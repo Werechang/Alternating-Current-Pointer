@@ -35,11 +35,11 @@ public class Main extends Application implements Runnable {
 
     private double time = 0;
     private boolean isTimeRunning = false;
-    private int frequency = 40;
+    private int frequency = 20;
     private SinePoint[] sineVoltage;
     private double coordinateOffset = 0;
     private int sineStartOffset = 0;
-    private int sineHeight = 1;
+    private int sineHeight = 10;
 
     public static void main(String[] args) {
         launch(args);
@@ -119,8 +119,8 @@ public class Main extends Application implements Runnable {
             if (Integer.parseInt(maxVoltageText.getText()) != sineHeight) {
                 resetSine();
                 int maxSine = Integer.parseInt(maxVoltageText.getText());
-                sineHeight = Math.min(maxSine, 190);
-                sineHeight = maxSine > 0 ? sineHeight : 1;
+                sineHeight = Math.min(maxSine, 19);
+                sineHeight = maxSine > -20 ? sineHeight : 1;
                 maxVoltageText.setText(Integer.toString(sineHeight));
                 sineVoltage = calcSine(sineHeight);
             }
@@ -271,14 +271,15 @@ public class Main extends Application implements Runnable {
     private void renderMarkers(GraphicsContext g, double height) {
         for (double i = 20; i<width; i+=90) {
             g.strokeLine(i, height+2, i, height-2);
+            g.strokeText(Integer.toString((int) ((i-20)/1.8)) + " ms", i, height-4);
         }
     }
 
     private void renderPointer(GraphicsContext g, double height) {
         double mid = height/2;
         g.setStroke(Color.rgb(0, 123, 255));
-        double px = Math.cos(time/360.0*frequency*2*Math.PI)*102+mid;
-        double py = -Math.sin(time/360.0*frequency*2*Math.PI)*102+mid;
+        double px = Math.cos(time/360.0*frequency*2*Math.PI)*(mid-5)+mid;
+        double py = -Math.sin(time/360.0*frequency*2*Math.PI)*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
 
@@ -319,7 +320,7 @@ public class Main extends Application implements Runnable {
     private SinePoint[] calcSine(double size) {
         ArrayList<SinePoint> points = new ArrayList<>();
         for (double i = 0; i < 360; i+=0.01) {
-            double y = Math.sin(i/360*frequency*2*Math.PI + (sineStartOffset/10.0))*size*100*(-1);
+            double y = Math.sin(i/360*frequency*2*Math.PI + (sineStartOffset/10.0))*size*10*(-1);
             points.add(new SinePoint(i, y));
         }
         return points.toArray(new SinePoint[0]);
