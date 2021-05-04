@@ -21,6 +21,8 @@ import java.util.ArrayList;
 
 public class Main extends Application implements Runnable {
 
+    private static final int FPS = 60;
+
     private Stage stage;
     private GridPane settings;
     private Canvas canvasPointer;
@@ -89,7 +91,7 @@ public class Main extends Application implements Runnable {
             }
         });
 
-        Label frequencyLabel = new Label("Frequenz");
+        Label frequencyLabel = new Label("Frequenz (Hz)");
 
         NumberField frequencyField = new NumberField(Integer.toString(frequency));
         frequencyField.setPrefSize(60, 10);
@@ -101,7 +103,7 @@ public class Main extends Application implements Runnable {
             }
         });
 
-        Label phaseOffsetLabel = new Label("Phasenverschiebung");
+        Label phaseOffsetLabel = new Label("Phasenverschiebung (t)");
 
         NumberField phaseOffsetField = new NumberField(Integer.toString(sineStartOffset));
         phaseOffsetField.setOnAction(event -> {
@@ -112,7 +114,7 @@ public class Main extends Application implements Runnable {
             }
         });
 
-        Label maxVoltageLabel = new Label("û");
+        Label maxVoltageLabel = new Label("û (V)");
 
         NumberField maxVoltageText = new NumberField(Integer.toString(sineHeight));
         maxVoltageText.setOnAction(event -> {
@@ -174,7 +176,7 @@ public class Main extends Application implements Runnable {
         System.out.println("Running...");
         long lastTime = System.nanoTime();
         long timer = System.currentTimeMillis();
-        double ns = 1000000000.0/60;
+        double ns = 1000000000.0/FPS;
         double delta = 0;
         int frames = 0;
 
@@ -269,7 +271,7 @@ public class Main extends Application implements Runnable {
     }
 
     private void renderMarkers(GraphicsContext g, double height) {
-        for (double i = 20; i<width; i+=90) {
+        for (double i = 20; i<width && i<=1820; i+=90) {
             g.strokeLine(i, height+2, i, height-2);
             g.strokeText(Integer.toString((int) ((i-20)/1.8)) + " ms", i, height-4);
         }
