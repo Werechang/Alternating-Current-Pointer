@@ -271,7 +271,7 @@ public class Main extends Application implements Runnable {
     }
 
     private void renderMarkers(GraphicsContext g, double height) {
-        for (double i = 20; i<width && i<=1820; i+=90) {
+        for (int i = 20; i<width && i<=1820; i+=90) {
             g.strokeLine(i, height+2, i, height-2);
             g.strokeText((int) ((i - 20) / 1.8) + " ms", i, height-4);
         }
