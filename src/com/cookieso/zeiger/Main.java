@@ -42,7 +42,7 @@ public class Main extends Application implements Runnable {
     private int frequency = 20;
     private SinePoint[] sineVoltage;
     private double coordinateOffset = 0;
-    private double sineStartOffset = 0;
+    private double phaseOffset = 0;
     private int sineHeight = 10;
 
     public static void main(String[] args) {
@@ -105,13 +105,13 @@ public class Main extends Application implements Runnable {
             }
         });
 
-        Label phaseOffsetLabel = new Label("Phasenverschiebung (t)");
+        Label phaseOffsetLabel = new Label("Phasenverschiebung (ms)");
 
-        NumberField phaseOffsetField = new NumberField(Integer.toString((int) Math.round(sineStartOffset)));
+        NumberField phaseOffsetField = new NumberField(Integer.toString((int) Math.round(phaseOffset)));
         phaseOffsetField.setOnAction(event -> {
-            if (Integer.parseInt(phaseOffsetField.getText()) != sineStartOffset) {
+            if (Integer.parseInt(phaseOffsetField.getText()) != phaseOffset) {
                 resetSine();
-                sineStartOffset = (Integer.parseInt(phaseOffsetField.getText())/5.0*Math.PI)/frequency;
+                phaseOffset = Integer.parseInt(phaseOffsetField.getText());
                 sineVoltage = calcSine(sineHeight);
             }
         });
@@ -282,17 +282,17 @@ public class Main extends Application implements Runnable {
     private void renderPointer(GraphicsContext g, double height) {
         double mid = height/2;
         g.setStroke(Color.rgb(0, 123, 255));
-        double px = Math.cos((time+(sineStartOffset))/360.0*frequency*2*Math.PI)*(mid-5)+mid;
-        double py = -Math.sin((time+(sineStartOffset))/360.0*frequency*2*Math.PI)*(mid-5)+mid;
+        double px = Math.cos((time+(phaseOffset))/360.0*frequency*2*Math.PI)*(mid-5)+mid;
+        double py = -Math.sin((time+(phaseOffset))/360.0*frequency*2*Math.PI)*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
         double arrowWidth = 2;
 
-        double pTriangle1x = Math.cos((time+(sineStartOffset)+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
-        double pTriangle1y = -Math.sin((time+(sineStartOffset)+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle1x = Math.cos((time+(phaseOffset)+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle1y = -Math.sin((time+(phaseOffset)+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
 
-        double pTriangle2x = Math.cos((time+(sineStartOffset)-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
-        double pTriangle2y = -Math.sin((time+(sineStartOffset)-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle2x = Math.cos((time+(phaseOffset)-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle2y = -Math.sin((time+(phaseOffset)-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
 
         g.setFill(Color.rgb(0, 123, 255));
 
@@ -336,7 +336,7 @@ public class Main extends Application implements Runnable {
     private SinePoint[] calcSine(double size) {
         ArrayList<SinePoint> points = new ArrayList<>();
         for (double i = 0; i < 360; i+=0.01) {
-            double y = Math.sin(i/360*frequency*2*Math.PI + (sineStartOffset/10.0))*size*10*(-1);
+            double y = Math.sin(i/360*frequency*2*Math.PI + phaseOffset/(100.0*frequency)*3*Math.PI)*size*10*(-1);
             points.add(new SinePoint(i, y));
         }
         return points.toArray(new SinePoint[0]);
