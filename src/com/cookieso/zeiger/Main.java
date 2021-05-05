@@ -21,6 +21,8 @@ import java.util.ArrayList;
 
 public class Main extends Application implements Runnable {
 
+    // TODO: Fix phaseOffset
+
     private static final int FPS = 60;
 
     private Stage stage;
@@ -40,7 +42,7 @@ public class Main extends Application implements Runnable {
     private int frequency = 20;
     private SinePoint[] sineVoltage;
     private double coordinateOffset = 0;
-    private int sineStartOffset = 0;
+    private double sineStartOffset = 0;
     private int sineHeight = 10;
 
     public static void main(String[] args) {
@@ -105,11 +107,11 @@ public class Main extends Application implements Runnable {
 
         Label phaseOffsetLabel = new Label("Phasenverschiebung (t)");
 
-        NumberField phaseOffsetField = new NumberField(Integer.toString(sineStartOffset));
+        NumberField phaseOffsetField = new NumberField(Integer.toString((int) Math.round(sineStartOffset)));
         phaseOffsetField.setOnAction(event -> {
             if (Integer.parseInt(phaseOffsetField.getText()) != sineStartOffset) {
                 resetSine();
-                sineStartOffset = Integer.parseInt(phaseOffsetField.getText());
+                sineStartOffset = (Integer.parseInt(phaseOffsetField.getText())/5.0*Math.PI)/frequency;
                 sineVoltage = calcSine(sineHeight);
             }
         });
@@ -280,17 +282,17 @@ public class Main extends Application implements Runnable {
     private void renderPointer(GraphicsContext g, double height) {
         double mid = height/2;
         g.setStroke(Color.rgb(0, 123, 255));
-        double px = Math.cos(time/360.0*frequency*2*Math.PI)*(mid-5)+mid;
-        double py = -Math.sin(time/360.0*frequency*2*Math.PI)*(mid-5)+mid;
+        double px = Math.cos((time+(sineStartOffset))/360.0*frequency*2*Math.PI)*(mid-5)+mid;
+        double py = -Math.sin((time+(sineStartOffset))/360.0*frequency*2*Math.PI)*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
         double arrowWidth = 2;
 
-        double pTriangle1x = Math.cos((time+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
-        double pTriangle1y = -Math.sin((time+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle1x = Math.cos((time+(sineStartOffset)+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle1y = -Math.sin((time+(sineStartOffset)+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
 
-        double pTriangle2x = Math.cos((time-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
-        double pTriangle2y = -Math.sin((time-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle2x = Math.cos((time+(sineStartOffset)-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle2y = -Math.sin((time+(sineStartOffset)-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
 
         g.setFill(Color.rgb(0, 123, 255));
 
