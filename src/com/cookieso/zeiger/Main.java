@@ -130,12 +130,12 @@ public class Main extends Application implements Runnable {
 
         timeSlider.setMin(0);
         timeSlider.setBlockIncrement(10);
-        timeSlider.setMax(360);
+        timeSlider.setMax(1000);
         timeSlider.setValue(0);
         timeSlider.setShowTickLabels(true);
         timeSlider.setShowTickMarks(true);
         timeSlider.setPrefSize(300, 20);
-        timeSlider.valueProperty().addListener((observable, oldValue, newValue) -> time = (double) Math.round((Double) newValue));
+        timeSlider.valueProperty().addListener((observable, oldValue, newValue) -> time = (double) Math.round((double)newValue/2.7777));
 
         settings.add(timeManager, 0, 0, 2, 1);
         settings.add(timeSlider, 0, 1);
@@ -150,7 +150,7 @@ public class Main extends Application implements Runnable {
         canvasPointer = new Canvas(height*0.4, height*0.4);
         top.getChildren().add(canvasPointer);
 
-        canvasSine = new Canvas(width, height*0.6);
+        canvasSine = new Canvas(width, height*0.5);
 
         layout.getChildren().add(top);
         layout.getChildren().add(canvasSine);
@@ -194,7 +194,7 @@ public class Main extends Application implements Runnable {
                 if (isTimeRunning) {
                     if (time<360) {
                         time++;
-                        timeSlider.setValue(time);
+                        timeSlider.setValue(time*2.7777);
                     } else {
                         Platform.runLater(() -> timeManager.setText("Start"));
                         isTimeRunning = false;
@@ -222,7 +222,7 @@ public class Main extends Application implements Runnable {
         canvasPointer.setHeight(cPD);
         canvasPointer.setWidth(cPD);
 
-        canvasSine.setHeight(height*0.6);
+        canvasSine.setHeight(height*0.5);
         canvasSine.setWidth(width);
     }
 
