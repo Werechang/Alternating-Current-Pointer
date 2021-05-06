@@ -21,8 +21,6 @@ import java.util.ArrayList;
 
 public class Main extends Application implements Runnable {
 
-    // TODO: Fix phaseOffset
-
     private static final int FPS = 60;
 
     private Stage stage;
