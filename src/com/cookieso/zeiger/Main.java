@@ -24,7 +24,6 @@ public class Main extends Application implements Runnable {
     // TODO: Fix phaseOffset
 
     private static final int FPS = 60;
-    private static final double MAGIC_NUMBER = 2.7777777777777777;
 
     private Stage stage;
     private GridPane settings;
@@ -110,9 +109,9 @@ public class Main extends Application implements Runnable {
 
         NumberField phaseOffsetField = new NumberField(Integer.toString((int) Math.round(phaseOffset)));
         phaseOffsetField.setOnAction(event -> {
-            if (Double.parseDouble(phaseOffsetField.getText())/45 != phaseOffset) {
+            if (Double.parseDouble(phaseOffsetField.getText()) != phaseOffset) {
                 resetSine();
-                phaseOffset = Double.parseDouble(phaseOffsetField.getText())/45;
+                phaseOffset = Double.parseDouble(phaseOffsetField.getText());
                 sineVoltage = calcSine(sineHeight);
             }
         });
@@ -138,7 +137,7 @@ public class Main extends Application implements Runnable {
         timeSlider.setShowTickLabels(true);
         timeSlider.setShowTickMarks(true);
         timeSlider.setPrefSize(300, 20);
-        timeSlider.valueProperty().addListener((observable, oldValue, newValue) -> time = (double) Math.round((double)newValue/ MAGIC_NUMBER));
+        timeSlider.valueProperty().addListener((observable, oldValue, newValue) -> time = (double) Math.round((double)newValue/2.7777));
 
         settings.add(timeManager, 0, 0, 2, 1);
         settings.add(timeSlider, 0, 1);
@@ -197,7 +196,7 @@ public class Main extends Application implements Runnable {
                 if (isTimeRunning) {
                     if (time<360) {
                         time++;
-                        timeSlider.setValue(time* MAGIC_NUMBER);
+                        timeSlider.setValue(time*2.7777);
                     } else {
                         Platform.runLater(() -> timeManager.setText("Start"));
                         isTimeRunning = false;
@@ -337,7 +336,7 @@ public class Main extends Application implements Runnable {
     private SinePoint[] calcSine(double size) {
         ArrayList<SinePoint> points = new ArrayList<>();
         for (double i = 0; i < 360; i+=0.01) {
-            double y = Math.sin(i/360*frequency*2*Math.PI + ((phaseOffset/2.7777))/4*Math.PI*frequency)*size*10*(-1);
+            double y = Math.sin(i/360*frequency*2*Math.PI + (phaseOffset/2.7777)/4*Math.PI*frequency)*size*10*(-1);
             points.add(new SinePoint(i, y));
         }
         return points.toArray(new SinePoint[0]);
