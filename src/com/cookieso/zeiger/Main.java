@@ -111,7 +111,7 @@ public class Main extends Application implements Runnable {
         phaseOffsetField.setOnAction(event -> {
             if (Double.parseDouble(phaseOffsetField.getText()) != phaseOffset) {
                 resetSine();
-                phaseOffset = Double.parseDouble(phaseOffsetField.getText());
+                phaseOffset = Double.parseDouble(phaseOffsetField.getText()) / 45;
                 sineVoltage = calcSine(sineHeight);
             }
         });
@@ -336,8 +336,10 @@ public class Main extends Application implements Runnable {
     private SinePoint[] calcSine(double size) {
         ArrayList<SinePoint> points = new ArrayList<>();
         for (double i = 0; i < 360; i+=0.01) {
-            double y = Math.sin(i/360*frequency*2*Math.PI + (phaseOffset/2.7777)/4*Math.PI*frequency)*size*10*(-1);
+            double y = Math.sin(i/360*frequency*2*Math.PI + ((phaseOffset/2.7777))/4*Math.PI*frequency)*size*10*(-1);
             points.add(new SinePoint(i, y));
+
+            if(y < 0.01 &&  y > -0.01){System.out.println(i*1000/360);}
         }
         return points.toArray(new SinePoint[0]);
     }
