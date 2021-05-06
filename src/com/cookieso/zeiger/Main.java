@@ -21,6 +21,8 @@ import java.util.ArrayList;
 
 public class Main extends Application implements Runnable {
 
+    // TODO: Fix phaseOffset
+
     private static final int FPS = 60;
 
     private Stage stage;
@@ -37,7 +39,7 @@ public class Main extends Application implements Runnable {
 
     private double time = 0;
     private boolean isTimeRunning = false;
-    private int frequency = 20;
+    private double frequency = 20;
     private SinePoint[] sineVoltage;
     private double coordinateOffset = 0;
     private double phaseOffset = 0;
@@ -93,12 +95,12 @@ public class Main extends Application implements Runnable {
 
         Label frequencyLabel = new Label("Frequenz (Hz)");
 
-        NumberField frequencyField = new NumberField(Integer.toString(frequency));
+        NumberField frequencyField = new NumberField(Double.toString(frequency));
         frequencyField.setPrefSize(60, 10);
         frequencyField.setOnAction(event -> {
             if (Integer.parseInt(frequencyField.getText()) != frequency) {
                 resetSine();
-                frequency = Integer.parseInt(frequencyField.getText());
+                frequency = Double.parseDouble(frequencyField.getText());
                 sineVoltage = calcSine(sineHeight);
             }
         });
@@ -107,9 +109,9 @@ public class Main extends Application implements Runnable {
 
         NumberField phaseOffsetField = new NumberField(Integer.toString((int) Math.round(phaseOffset)));
         phaseOffsetField.setOnAction(event -> {
-            if (Integer.parseInt(phaseOffsetField.getText()) != phaseOffset) {
+            if (Double.parseDouble(phaseOffsetField.getText()) != phaseOffset) {
                 resetSine();
-                phaseOffset = Integer.parseInt(phaseOffsetField.getText());
+                phaseOffset = Double.parseDouble(phaseOffsetField.getText());
                 sineVoltage = calcSine(sineHeight);
             }
         });
@@ -334,7 +336,12 @@ public class Main extends Application implements Runnable {
     private SinePoint[] calcSine(double size) {
         ArrayList<SinePoint> points = new ArrayList<>();
         for (double i = 0; i < 360; i+=0.01) {
-            double y = Math.sin(i/360*frequency*2*Math.PI + phaseOffset/100*Math.PI*frequency)*size*10*(-1);
+            double offset = phaseOffset/2.7777;
+            double realOffset = offset/4*Math.PI*frequency;
+            double y = Math.sin(i/360*frequency*2*Math.PI + realOffset)*size*10*(-1);
+            if (i == 0) {
+                System.out.println(y + " PhaseOffset: " + offset + " | " + realOffset);
+            }
             points.add(new SinePoint(i, y));
         }
         return points.toArray(new SinePoint[0]);
