@@ -303,6 +303,13 @@ public class Main extends Application implements Runnable {
 
         g.setFill(Color.gray(0));
         g.setStroke(Color.gray(0));
+
+        double a = frequency * (time/360);
+        double b = Math.floor(a);
+        double angle = time * frequency - 360 * b;
+        g.strokeText("Winkel: " + angle +"°", mid,mid/2);
+
+
     }
 
     private void renderSineVoltage(GraphicsContext g, double height, double width) {
@@ -340,5 +347,8 @@ public class Main extends Application implements Runnable {
             points.add(new SinePoint(i, y));
         }
         return points.toArray(new SinePoint[0]);
+
+
+
     }
 }
