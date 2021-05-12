@@ -96,7 +96,7 @@ public class Main extends Application implements Runnable {
         NumberField frequencyField = new NumberField(Double.toString(frequency));
         frequencyField.setPrefSize(60, 10);
         frequencyField.setOnAction(event -> {
-            if (Integer.parseInt(frequencyField.getText()) != frequency) {
+            if (Double.parseDouble(frequencyField.getText()) != frequency) {
                 resetSine();
                 frequency = Double.parseDouble(frequencyField.getText());
                 sineVoltage = calcSine(sineHeight);
@@ -334,7 +334,8 @@ public class Main extends Application implements Runnable {
     private SinePoint[] calcSine(double size) {
         ArrayList<SinePoint> points = new ArrayList<>();
         for (double i = 0; i < 360; i+=0.01) {
-            double y = Math.sin(i/360*frequency*2*Math.PI + (phaseOffset/2.7777)/4*Math.PI*frequency)*size*10*(-1);
+            double y = Math.sin(i/360*frequency*2*Math.PI + (phaseOffset*frequency)/500*Math.PI)*size*10*(-1);
+            if (i == 0) System.out.println(y/(-1*size*10));
             points.add(new SinePoint(i, y));
         }
         return points.toArray(new SinePoint[0]);
