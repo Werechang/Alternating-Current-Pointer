@@ -286,11 +286,10 @@ public class Main extends Application implements Runnable {
         double py = -Math.sin(time*realFreq + realOffset)*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
-        double arrowWidth = 1/frequency;
+        double arrowWidth = 0.1;
 
         double pTriangle1x = Math.cos(time*realFreq + realOffset + arrowWidth)*(mid-15)+mid;
         double pTriangle1y = -Math.sin(time*realFreq + realOffset + arrowWidth)*(mid-15)+mid;
-
         double pTriangle2x = Math.cos(time*realFreq + realOffset - arrowWidth)*(mid-15)+mid;
         double pTriangle2y = -Math.sin(time*realFreq + realOffset - arrowWidth)*(mid-15)+mid;
 
@@ -304,11 +303,14 @@ public class Main extends Application implements Runnable {
         g.setFill(Color.gray(0));
         g.setStroke(Color.gray(0));
 
+        //angle text
+        //der Tangens von angleOffset sollte den Winkel ergeben, aber aus einem mir nicht bekannten Grund geht das nicht.
+        double angleOffset = (-(py - mid))/(px - mid);
+
         double a = frequency * (time/360);
         double b = Math.floor(a);
         int angle = (int) (time * frequency - 360 * b);
-        g.strokeText("Winkel: " + angle +"°", mid,mid/2);
-
+        g.strokeText("Winkel: " + angleOffset +"°", mid,mid/2);
 
     }
 
