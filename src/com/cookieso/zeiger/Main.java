@@ -286,13 +286,13 @@ public class Main extends Application implements Runnable {
         double py = -Math.sin(time*realFreq + realOffset)*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
-        double arrowWidth = 2;
+        double arrowWidth = 1/frequency;
 
-        double pTriangle1x = Math.cos((time+(realOffset)+(arrowWidth/frequency))*realFreq)*(mid-15)+mid;
-        double pTriangle1y = -Math.sin((time+(realOffset)+(arrowWidth/frequency))*realFreq)*(mid-15)+mid;
+        double pTriangle1x = Math.cos(time*realFreq + realOffset + arrowWidth)*(mid-15)+mid;
+        double pTriangle1y = -Math.sin(time*realFreq + realOffset + arrowWidth)*(mid-15)+mid;
 
-        double pTriangle2x = Math.cos((time+(realOffset)-(arrowWidth/frequency))*realFreq)*(mid-15)+mid;
-        double pTriangle2y = -Math.sin((time+(realOffset)-(arrowWidth/frequency))*realFreq)*(mid-15)+mid;
+        double pTriangle2x = Math.cos(time*realFreq + realOffset - arrowWidth)*(mid-15)+mid;
+        double pTriangle2y = -Math.sin(time*realFreq + realOffset - arrowWidth)*(mid-15)+mid;
 
         g.setFill(Color.rgb(0, 123, 255));
 
