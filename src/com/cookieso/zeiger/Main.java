@@ -280,17 +280,19 @@ public class Main extends Application implements Runnable {
     private void renderPointer(GraphicsContext g, double height) {
         double mid = height/2;
         g.setStroke(Color.rgb(0, 123, 255));
-        double px = Math.cos((time+(phaseOffset))/360.0*frequency*2*Math.PI)*(mid-5)+mid;
-        double py = -Math.sin((time+(phaseOffset))/360.0*frequency*2*Math.PI)*(mid-5)+mid;
+        double realOffset = (phaseOffset*frequency)/500*Math.PI;
+        double realFreq = (1.0/360)*frequency*2*Math.PI;
+        double px = Math.cos((time+(realOffset))*realFreq)*(mid-5)+mid;
+        double py = -Math.sin((time+(realOffset))*realFreq)*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
         double arrowWidth = 2;
 
-        double pTriangle1x = Math.cos((time+(phaseOffset)+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
-        double pTriangle1y = -Math.sin((time+(phaseOffset)+(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle1x = Math.cos((time+(realOffset)+(arrowWidth/frequency))*realFreq)*(mid-15)+mid;
+        double pTriangle1y = -Math.sin((time+(realOffset)+(arrowWidth/frequency))*realFreq)*(mid-15)+mid;
 
-        double pTriangle2x = Math.cos((time+(phaseOffset)-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
-        double pTriangle2y = -Math.sin((time+(phaseOffset)-(arrowWidth/frequency))/360.0*frequency*2*Math.PI)*(mid-10)+mid;
+        double pTriangle2x = Math.cos((time+(realOffset)-(arrowWidth/frequency))*realFreq)*(mid-15)+mid;
+        double pTriangle2y = -Math.sin((time+(realOffset)-(arrowWidth/frequency))*realFreq)*(mid-15)+mid;
 
         g.setFill(Color.rgb(0, 123, 255));
 
@@ -335,7 +337,6 @@ public class Main extends Application implements Runnable {
         ArrayList<SinePoint> points = new ArrayList<>();
         for (double i = 0; i < 360; i+=0.01) {
             double y = Math.sin(i/360*frequency*2*Math.PI + (phaseOffset*frequency)/500*Math.PI)*size*10*(-1);
-            if (i == 0) System.out.println(y/(-1*size*10));
             points.add(new SinePoint(i, y));
         }
         return points.toArray(new SinePoint[0]);
