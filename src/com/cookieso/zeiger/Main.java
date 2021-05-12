@@ -305,6 +305,7 @@ public class Main extends Application implements Runnable {
 
         //angle text
         //der Tangens von angleOffset sollte den Winkel ergeben, aber aus einem mir nicht bekannten Grund geht das nicht.
+        // the tangent is calculated with radians, not degrees.
         double angleOffset = (-(py - mid))/(px - mid);
 
         double a = frequency * (time/360);
