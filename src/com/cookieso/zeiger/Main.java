@@ -306,7 +306,7 @@ public class Main extends Application implements Runnable {
 
         double a = frequency * (time/360);
         double b = Math.floor(a);
-        double angle = time * frequency - 360 * b;
+        int angle = (int) (time * frequency - 360 * b);
         g.strokeText("Winkel: " + angle +"°", mid,mid/2);
 
 
