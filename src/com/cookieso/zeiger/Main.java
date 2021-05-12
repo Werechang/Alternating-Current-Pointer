@@ -23,6 +23,8 @@ public class Main extends Application implements Runnable {
 
     private static final int FPS = 60;
 
+    double n = -9999;
+
     private Stage stage;
     private GridPane settings;
     private Canvas canvasPointer;
@@ -282,8 +284,10 @@ public class Main extends Application implements Runnable {
         g.setStroke(Color.rgb(0, 123, 255));
         double realOffset = (phaseOffset*frequency)/500*Math.PI;
         double realFreq = (1.0/360)*frequency*2*Math.PI;
-        double px = Math.cos(time*realFreq + realOffset)*(mid-5)+mid;
-        double py = -Math.sin(time*realFreq + realOffset)*(mid-5)+mid;
+        double x = Math.cos(time*realFreq + realOffset);
+        double y = -Math.sin(time*realFreq + realOffset);
+        double px = x*(mid-5)+mid;
+        double py = y*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
         double arrowWidth = 0.05;
@@ -303,15 +307,10 @@ public class Main extends Application implements Runnable {
         g.setFill(Color.gray(0));
         g.setStroke(Color.gray(0));
 
-        //angle text
-        //der Tangens von angleOffset sollte den Winkel ergeben, aber aus einem mir nicht bekannten Grund geht das nicht.
-        // the tangent is calculated with radians, not degrees.
-        double angleOffset = (-(py - mid))/(px - mid);
-
-        double a = frequency * (time/360);
-        double b = Math.floor(a);
-        int angle = (int) (time * frequency - 360 * b);
-        g.strokeText("Winkel: " + angleOffset +"°", mid,mid/2);
+        // TODO: get the angle right
+        double angleOffset = 1/(2*(mid-5));
+        int angle = (int) Math.round(angleOffset);
+        g.strokeText("Winkel: " + angle +"°", mid,mid/2);
 
     }
 
