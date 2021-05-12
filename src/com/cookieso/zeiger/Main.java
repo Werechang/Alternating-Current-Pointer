@@ -286,7 +286,7 @@ public class Main extends Application implements Runnable {
         double py = -Math.sin(time*realFreq + realOffset)*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
-        double arrowWidth = 0.1;
+        double arrowWidth = 0.05;
 
         double pTriangle1x = Math.cos(time*realFreq + realOffset + arrowWidth)*(mid-15)+mid;
         double pTriangle1y = -Math.sin(time*realFreq + realOffset + arrowWidth)*(mid-15)+mid;
