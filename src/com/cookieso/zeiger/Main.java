@@ -282,10 +282,8 @@ public class Main extends Application implements Runnable {
         g.setStroke(Color.rgb(0, 123, 255));
         double realOffset = (phaseOffset*frequency)/500*Math.PI;
         double realFreq = (1.0/360)*frequency*2*Math.PI;
-        //double px = Math.cos((time+(realOffset))*realFreq)*(mid-5)+mid;
-        double px = Math.cos(time/360*frequency*2*Math.PI + (phaseOffset*frequency)/500*Math.PI)*(mid-5)+mid;
-        double py = -Math.sin(time/360*frequency*2*Math.PI + (phaseOffset*frequency)/500*Math.PI)*(mid-5)+mid;
-        //double py = -Math.sin((time+(realOffset))*realFreq)*(mid-5)+mid;
+        double px = Math.cos(time*realFreq + realOffset)*(mid-5)+mid;
+        double py = -Math.sin(time*realFreq + realOffset)*(mid-5)+mid;
         g.strokeLine(mid, mid, px, py);
 
         double arrowWidth = 2;
