@@ -23,8 +23,6 @@ public class Main extends Application implements Runnable {
 
     private static final int FPS = 60;
 
-    double n = -9999;
-
     private Stage stage;
     private GridPane settings;
     private Canvas canvasPointer;
